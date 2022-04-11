@@ -151,7 +151,7 @@ def main():
                         help='use _pretrained GloVe_300d')
     parser.add_argument('--d_pretrained', type=int, default=300,
                         help='pretrained embedding dimension')
-    parser.add_argument('--path_pretrained', type=str, default='./data/_pretrained/glove.6B.300d.txt',
+    parser.add_argument('--path_pretrained', type=str, default='./data/glove.6B.300d.txt',
                         help='path of pretrained GloVe embeddings')
     parser.add_argument('--seed', type=int, default=1111,
                         help='random seed')

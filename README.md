@@ -19,7 +19,7 @@ Please refer to [textGCN](https://github.com/yao8839836/text_gcn/tree/master/dat
 
 For word embeddings, please refer to [GloVe](https://nlp.stanford.edu/projects/glove/), 
 download [glove.6B.zip](https://nlp.stanford.edu/data/glove.6B.zip), 
-unzip and move the file `glove.6B.300d.txt` to `./data/_pretrained/`
+unzip and move the file `glove.6B.300d.txt` under `./data/` folder.
 
 ---
 ## Results

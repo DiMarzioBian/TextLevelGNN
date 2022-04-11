@@ -60,20 +60,6 @@ def collate_fn(insts):
     return x, nb_x, w_edge, y
 
 
-def load_pretrain_embedding(args):
-    """ Load _pretrained embedding """
-    with open(args.word_embedding_file, encoding="utf8") as f:
-        lines = f.readlines()
-        embedding = np.random.random((args.n_node, args.d_feature))
-        for line in f.readlines():
-            line_split = line.strip().split()
-            if line_split[0] in args.word2idx:
-                embedding[args.word2idx[line_split[0]]] = line_split[1:]
-
-        embedding[0] = 0 # set the _PAD_ as 0
-    return torch.tensor(embedding, dtype=torch.float)
-
-
 def get_dataloader(args):
     """ Get dataloader, word2idx and pretrained embeddings """
 
