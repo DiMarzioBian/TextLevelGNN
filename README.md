@@ -22,14 +22,12 @@ download [glove.6B.zip](https://nlp.stanford.edu/data/glove.6B.zip),
 unzip and move the file `glove.6B.300d.txt` to `./data/_pretrained/`
 
 ---
-## Previous implementation results (for reference only)
+## Results
 
 We are only able to implement similar result on R8 and R52 dataset, while Ohsumed perform quite difference as compared to paper's one.
 
-| Accuracy | R8    | R52   | Ohsumed | MR   |
-|----------|-------|-------|---------|------|
-| Train    | 62.6% | 56.8% | 42.9%   | 69.3%|
-| Valid    | 96.3% | 93.3% | 58.0%   | 72.0%|
-| Test     | 96.4% | 91.7% | 54.1%   | 69.0%|
-
-Note that the training accuracy is lower because that the author set the dropout right after dense layer.
+| Accuracy | R8     | R52    | Ohsumed | MR     |
+|----------|--------|--------|---------|--------|
+| Train    | 99.45% | 96.27% | 95.99%  | 99.28% |
+| Valid    | 97.27% | 93.73% | 52.68%  | 75.33% |
+| Test     | 96.30% | 92.72% | 53.97%  | 73.21% |
