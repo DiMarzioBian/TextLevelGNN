@@ -110,10 +110,10 @@ def main():
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.lr_step, gamma=args.lr_gamma)
 
     # Start modeling
-    print('\n[info] | Dataset: {Dataset} | Fix_edge_w: {fix_edge_w} | Mean_reduction: {mean_reduction} '
-          '| Pretrained: {pretrained} |'
+    print('\n[info] | Dataset: {Dataset} | fix_edge_w: {fix_edge_w} | mean_reduction: {mean_reduction} '
+          '| pretrained: {pretrained} | n_word_min: {n_word_min} | n_gram: {n_gram} |'
           .format(Dataset=args.dataset, fix_edge_w=args.fix_edge_w, mean_reduction=args.mean_reduction,
-                  pretrained=args.pretrained))
+                  pretrained=args.pretrained, n_word_min=args.n_word_min, n_gram=args.n_gram))
     loss_best = 1e5
     acc_best = 0
     epoch_best = 0
@@ -162,10 +162,10 @@ def main():
 
     print('\n\t| Test | loss {:5.4f} | acc {:5.4f} |'
           .format(loss_test, acc_test))
-    print('\n[info] | Dataset: {Dataset} | Fix_edge_w: {fix_edge_w} | Mean_reduction: {mean_reduction} '
-          '| Pretrained: {pretrained} |'
+    print('\n[info] | Dataset: {Dataset} | fix_edge_w: {fix_edge_w} | mean_reduction: {mean_reduction} '
+          '| pretrained: {pretrained} | n_word_min: {n_word_min} | n_gram: {n_gram} |'
           .format(Dataset=args.dataset, fix_edge_w=args.fix_edge_w, mean_reduction=args.mean_reduction,
-                  pretrained=args.pretrained))
+                  pretrained=args.pretrained, n_word_min=args.n_word_min, n_gram=args.n_gram))
 
 
 if __name__ == '__main__':
