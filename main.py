@@ -16,7 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description='TextLevelGNN project')
 
     # experiment setting
-    parser.add_argument('--dataset', type=str, default='20ng', choices=['mr', 'ng', 'ohsumed', 'R8', 'R52'],
+    parser.add_argument('--dataset', type=str, default='mr', choices=['mr', 'ohsumed', 'R8', 'R52'],
                         help='name of dataset used')
     parser.add_argument('--fix_edge_w', type=bool, default=False,
                         help='ablation: fix edge weights')
@@ -42,9 +42,9 @@ def main():
                         help='device for computing')
     parser.add_argument('--num_worker', type=int, default=10,
                         help='number of dataloader worker')
-    parser.add_argument('--batch_size', type=int, default=32, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=100, metavar='N',
                         help='batch size')
-    parser.add_argument('--epochs', type=int, default=10,
+    parser.add_argument('--epochs', type=int, default=100,
                         help='upper epoch limit')
     parser.add_argument('--epochs_warmup', type=int, default=0,
                         help='warm up epoch')
@@ -56,7 +56,7 @@ def main():
                         help='number of epoch for each lr downgrade')
     parser.add_argument('--lr_gamma', type=float, default=0.1,
                         help='strength of lr downgrade')
-    parser.add_argument('--es_patience_max', type=int, default=10,
+    parser.add_argument('--es_patience_max', type=int, default=5,
                         help='max early stopped patience')
     parser.add_argument('--seed', type=int, default=1111,
                         help='random seed')
@@ -110,8 +110,8 @@ def main():
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.lr_step, gamma=args.lr_gamma)
 
     # Start modeling
-    print('\n[info] | Dataset {Dataset} | Fix_edge_w {fix_edge_w} | Mean_reduction {mean_reduction} '
-          '| Pretrained {pretrained} |'
+    print('\n[info] | Dataset: {Dataset} | Fix_edge_w: {fix_edge_w} | Mean_reduction: {mean_reduction} '
+          '| Pretrained: {pretrained} |'
           .format(Dataset=args.dataset, fix_edge_w=args.fix_edge_w, mean_reduction=args.mean_reduction,
                   pretrained=args.pretrained))
     loss_best = 1e5
@@ -149,23 +149,23 @@ def main():
 
         # logging
         print('\t| Valid | loss {:5.4f} | acc {:5.4f} | es_patience {:.0f}/{:.0f} |'
-              .format(loss_val, torch.exp(loss_val), es_patience, args.es_patience_max))
+              .format(loss_val, acc_val, es_patience, args.es_patience_max))
 
     # testing phase
     print('\n[Testing]')
     with open(args.path_model_params, 'rb') as f:
         model.load_state_dict(torch.load(f))
-    with open(args.path_model, 'rb') as f:
+    with open(args.path_model, 'wb') as f:
         torch.save(model, f)
 
-    loss_test = evaluate(args, model, test_loader)
+    loss_test, acc_test = evaluate(args, model, test_loader)
 
-    print('  | Test | loss {:5.4f} | acc {:5.4f} |'
-          .format(loss_test, torch.exp(loss_test)))
-    print('\n[info] | Dataset {dataset} | d_model {d_model} | n_head {n_head} | d_k {d_k} | '
-          'd_inner {d_inner} | n_gram {n_gram} |\n'
-          .format(dataset=args.dataset, d_model=args.d_model, n_head=args.n_head, d_k=args.d_k,
-                  d_inner=args.d_inner, n_gram=args.n_gram))
+    print('\n\t| Test | loss {:5.4f} | acc {:5.4f} |'
+          .format(loss_test, acc_test))
+    print('\n[info] | Dataset: {Dataset} | Fix_edge_w: {fix_edge_w} | Mean_reduction: {mean_reduction} '
+          '| Pretrained: {pretrained} |'
+          .format(Dataset=args.dataset, fix_edge_w=args.fix_edge_w, mean_reduction=args.mean_reduction,
+                  pretrained=args.pretrained))
 
 
 if __name__ == '__main__':

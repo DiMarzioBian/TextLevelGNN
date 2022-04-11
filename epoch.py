@@ -20,7 +20,7 @@ def train(args, model, data, optimizer):
         # calculate loss
         loss_total += loss_batch * scores_batch.shape[0]
         n_sample += scores_batch.shape[0]
-        correct_pred_total += scores_batch.max(dim=-1)[1]
+        correct_pred_total += (scores_batch.max(dim=-1)[1] == Y).sum()
 
     loss_mean = loss_total / n_sample
     acc = correct_pred_total / n_sample
@@ -44,9 +44,9 @@ def evaluate(args, model, data):
             # calculate loss
             loss_total += loss_batch * scores_batch.shape[0]
             n_sample += scores_batch.shape[0]
-            correct_pred_total += scores_batch.max(dim=-1)[1]
+            correct_pred_total += (scores_batch.max(dim=-1)[1] == Y).sum()
 
-        loss_mean = loss_total / n_sample
-        acc = correct_pred_total / n_sample
+    loss_mean = loss_total / n_sample
+    acc = correct_pred_total / n_sample
 
-        return loss_mean, acc
+    return loss_mean, acc

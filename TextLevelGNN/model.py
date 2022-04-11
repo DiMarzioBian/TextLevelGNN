@@ -22,11 +22,7 @@ class TextLevelGNN(nn.Module):
         nn.init.xavier_uniform_(self.edge_weights.weight)
         nn.init.xavier_uniform_(self.node_weights.weight)
 
-        self.fc = nn.Sequential(
-            nn.Linear(self.d_model, self.n_category, bias=True),
-            nn.ReLU(inplace=True),
-            nn.Dropout(args.dropout)  # doesn't make sense..
-        )
+        self.fc = nn.Linear(self.d_model, self.n_category, bias=True)
 
     def forward(self, x, nb_x, w_edge):
         """
