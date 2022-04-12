@@ -16,7 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description='TextLevelGNN project')
 
     # experiment setting
-    parser.add_argument('--dataset', type=str, default='mr', choices=['mr', 'ohsumed', 'R8', 'R52'],
+    parser.add_argument('--dataset', type=str, default='ohsumed', choices=['mr', 'ohsumed', 'R8', 'R52'],
                         help='name of dataset used')
     parser.add_argument('--fix_edge_w', type=bool, default=False,
                         help='ablation: fix edge weights')
