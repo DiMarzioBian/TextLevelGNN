@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import torch
+import torch.nn.functional as F
 
 
 def train(args, model, data, optimizer):
@@ -13,7 +14,7 @@ def train(args, model, data, optimizer):
 
         optimizer.zero_grad()
         scores_batch = model(X, NX, EW)
-        loss_batch = args.criterion(scores_batch, Y)
+        loss_batch = F.cross_entropy(scores_batch, Y)
         loss_batch.backward()
         optimizer.step()
 
@@ -39,7 +40,7 @@ def evaluate(args, model, data):
             X, NX, EW, Y = map(lambda x: x.to(args.device), batch)
 
             scores_batch = model(X, NX, EW)
-            loss_batch = args.criterion(scores_batch, Y)
+            loss_batch = F.cross_entropy(scores_batch, Y)
 
             # calculate loss
             loss_total += loss_batch * scores_batch.shape[0]

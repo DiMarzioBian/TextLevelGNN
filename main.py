@@ -24,6 +24,8 @@ def main():
                         help='ablation: use mean reduction instead of max')
     parser.add_argument('--pretrained', type=bool, default=True,
                         help='ablation: use pretrained GloVe')
+    parser.add_argument('--device', type=str, default='cuda:0',
+                        help='device for computing')
 
     # hyperparameters
     parser.add_argument('--d_model', type=int, default=300,
@@ -38,8 +40,6 @@ def main():
     # training settings
     parser.add_argument('--ratio_valid', type=float, default=0.1,
                         help='ratio of validation set from whole training set')
-    parser.add_argument('--device', type=str, default='cuda:0',
-                        help='device for computing')
     parser.add_argument('--num_worker', type=int, default=10,
                         help='number of dataloader worker')
     parser.add_argument('--batch_size', type=int, default=100, metavar='N',
@@ -103,7 +103,6 @@ def main():
     train_loader, valid_loader, test_loader, word2idx, embeds_pretrained = get_dataloader(args)
 
     model = TextLevelGNN(args, embeds_pretrained).to(args.device)
-    args.criterion = nn.CrossEntropyLoss()
 
     optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, model.parameters()), lr=args.lr,
                                  weight_decay=1e-4)
