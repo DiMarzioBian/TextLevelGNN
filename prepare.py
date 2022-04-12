@@ -115,7 +115,7 @@ def transform_word2idx(tokens, word2idx):
 
 
 def get_embedding(args, word2idx):
-    """ Find words in pretrained FloVe embeddings."""
+    """ Find words in pretrained GloVe embeddings."""
 
     embeds_word = np.random.uniform(-np.sqrt(0.06), np.sqrt(0.06), (len(word2idx), args.d_pretrained))  # initializing
     emb_counts = 0
