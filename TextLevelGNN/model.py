@@ -28,8 +28,8 @@ class TextLevelGNN(nn.Module):
         """
         INPUT:
             x: nodes of a sentence, (batch, sentence_maxlen)
-            nb_x: neighbor nodes of node x, (batch, max_len_text, n_gram*2):
-            w_edge: neighbor weights of neighbor nodes of node x, (batch, max_len_text, n_gram*2)
+            nb_x: neighbor nodes of node x, (batch, max_len_text, n_degree*2):
+            w_edge: neighbor weights of neighbor nodes of node x, (batch, max_len_text, n_degree*2)
 
         OUTPUT:
             y: Predicted Probabilities of each classes

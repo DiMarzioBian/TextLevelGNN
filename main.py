@@ -34,7 +34,7 @@ def main():
                         help='maximum length of text, default 100, and 150 for ohsumed')
     parser.add_argument('--n_word_min', type=int, default=2,
                         help='minimum word counts')
-    parser.add_argument('--n_gram', type=int, default=3,
+    parser.add_argument('--n_degree', type=int, default=3,
                         help='neighbor region radius')
 
     # training settings
@@ -74,7 +74,7 @@ def main():
     if args.dataset == 'ohsumed':
         args.dataset = 'ohsumed_single_23'
         args.n_word_min = 3
-        args.n_gram = 6
+        args.n_degree = 6
         args.epochs_warmup = 10
 
     if not os.path.exists(args.path_data + args.dataset + '.pkl'):
@@ -110,9 +110,9 @@ def main():
 
     # Start modeling
     print('\n[info] | Dataset: {Dataset} | fix_edge_w: {fix_edge_w} | mean_reduction: {mean_reduction} '
-          '| pretrained: {pretrained} | n_word_min: {n_word_min} | n_gram: {n_gram} |'
+          '| pretrained: {pretrained} | n_word_min: {n_word_min} | n_degree: {n_degree} |'
           .format(Dataset=args.dataset, fix_edge_w=args.fix_edge_w, mean_reduction=args.mean_reduction,
-                  pretrained=args.pretrained, n_word_min=args.n_word_min, n_gram=args.n_gram))
+                  pretrained=args.pretrained, n_word_min=args.n_word_min, n_degree=args.n_degree))
     loss_best = 1e5
     acc_best = 0
     epoch_best = 0
@@ -162,9 +162,9 @@ def main():
     print('\n\t| Test | loss {:5.4f} | acc {:5.4f} |'
           .format(loss_test, acc_test))
     print('\n[info] | Dataset: {Dataset} | fix_edge_w: {fix_edge_w} | mean_reduction: {mean_reduction} '
-          '| pretrained: {pretrained} | n_word_min: {n_word_min} | n_gram: {n_gram} |'
+          '| pretrained: {pretrained} | n_word_min: {n_word_min} | n_degree: {n_degree} |'
           .format(Dataset=args.dataset, fix_edge_w=args.fix_edge_w, mean_reduction=args.mean_reduction,
-                  pretrained=args.pretrained, n_word_min=args.n_word_min, n_gram=args.n_gram))
+                  pretrained=args.pretrained, n_word_min=args.n_word_min, n_degree=args.n_degree))
 
 
 if __name__ == '__main__':

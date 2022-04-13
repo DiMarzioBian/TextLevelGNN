@@ -12,7 +12,7 @@ class TextDataset(Dataset):
         self.length = len(self.gt)
 
         self.n_word = args.n_word
-        self.n_gram = args.n_gram
+        self.n_degree = args.n_degree
         self.max_len_text = args.max_len_text
 
         args.n_category = len(set(self.gt))
@@ -27,7 +27,7 @@ class TextDataset(Dataset):
 
         for idx_token in range(len_text):
             nb_front, nb_tail = [], []
-            for i in range(self.n_gram):
+            for i in range(self.n_degree):
                 before_idx = idx_token - 1 - i
                 nb_front.append(text_tokens[before_idx] if before_idx > -1 else 0)
                 after_idx = idx_token + 1 + i
@@ -39,7 +39,7 @@ class TextDataset(Dataset):
         x = np.zeros(self.max_len_text, dtype=np.int)
         x[:min(len(text_tokens), self.max_len_text)] = np.array(text_tokens)[: self.max_len_text]
 
-        nb_x = np.zeros((self.max_len_text, self.n_gram * 2), dtype=np.int)
+        nb_x = np.zeros((self.max_len_text, self.n_degree * 2), dtype=np.int)
         nb_x[:min(len(nb_text), self.max_len_text)] = np.array(nb_text)[:self.max_len_text]
 
         w_edge_head_idx = ((x-1) * self.n_word).reshape(-1, 1)
@@ -77,6 +77,7 @@ def get_dataloader(args):
     if args_prepare.max_len_text != args.max_len_text or args_prepare.d_pretrained != args.d_model:
         raise ValueError('Experiment settings do not match data preprocess settings. '
                          'Please re-run prepare.py with correct settings.')
+
     args.n_word = len(word2idx)  # including <pad> and <unk>
 
     train_x, valid_x, train_y, valid_y = train_test_split(train_data, train_gt, test_size=args.ratio_valid,

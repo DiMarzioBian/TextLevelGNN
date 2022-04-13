@@ -40,7 +40,6 @@ def read_corpus(args):
                     # add doc
                     data.append((subsets[subset], label, text))
 
-
     # movie review
     elif dataset == 'mr':
         for subset in ['train', 'test']:
