@@ -2,6 +2,7 @@ import argparse
 import os
 import time
 import zipfile
+import copy
 
 import torch
 import torch.nn as nn
@@ -16,58 +17,38 @@ def main():
     parser = argparse.ArgumentParser(description='TextLevelGNN project')
 
     # experiment setting
-    parser.add_argument('--dataset', type=str, default='mr', choices=['mr', 'ohsumed', 'R8', 'R52'],
+    parser.add_argument('--dataset', type=str, default='r8', choices=['mr', 'ohsumed', 'R8', 'R52'],
                         help='name of dataset used')
-    parser.add_argument('--fix_edge_w', type=bool, default=False,
-                        help='ablation: fix edge weights')
-    parser.add_argument('--mean_reduction', type=bool, default=False,
-                        help='ablation: use mean reduction instead of max')
-    parser.add_argument('--pretrained', type=bool, default=True,
-                        help='ablation: use pretrained GloVe')
-    parser.add_argument('--device', type=str, default='cuda:0',
-                        help='device for computing')
+    parser.add_argument('--fix_edge_w', type=bool, default=False, help='ablation: fix edge weights')
+    parser.add_argument('--mean_reduction', type=bool, default=False, help='ablation: use mean reduction instead of max')
+    parser.add_argument('--pretrained', type=bool, default=True, help='ablation: use pretrained GloVe')
+    parser.add_argument('--device', type=str, default='cuda:0', help='device for computing')
 
     # hyperparameters
-    parser.add_argument('--d_model', type=int, default=300,
-                        help='node representation dimensions including embedding')
+    parser.add_argument('--d_model', type=int, default=300, help='node representation dimensions including embedding')
     parser.add_argument('--max_len_text', type=int, default=100,
                         help='maximum length of text, default 100, and 150 for ohsumed')
-    parser.add_argument('--n_word_min', type=int, default=2,
-                        help='minimum word counts')
-    parser.add_argument('--n_degree', type=int, default=3,
-                        help='neighbor region radius')
+    parser.add_argument('--n_word_min', type=int, default=2, help='minimum word counts')
+    parser.add_argument('--n_degree', type=int, default=3, help='neighbor region radius')
 
     # training settings
-    parser.add_argument('--ratio_valid', type=float, default=0.1,
-                        help='ratio of validation set from whole training set')
-    parser.add_argument('--num_worker', type=int, default=10,
-                        help='number of dataloader worker')
-    parser.add_argument('--batch_size', type=int, default=100, metavar='N',
-                        help='batch size')
-    parser.add_argument('--epochs', type=int, default=100,
-                        help='upper epoch limit')
-    parser.add_argument('--epochs_warmup', type=int, default=0,
-                        help='warm up epoch')
-    parser.add_argument('--dropout', type=float, default=0.1,
-                        help='dropout rate applied to layers (0 = no dropout)')
-    parser.add_argument('--lr', type=float, default=1e-3,
-                        help='initial learning rate')
-    parser.add_argument('--lr_step', type=int, default=10,
-                        help='number of epoch for each lr downgrade')
-    parser.add_argument('--lr_gamma', type=float, default=0.1,
-                        help='strength of lr downgrade')
-    parser.add_argument('--es_patience_max', type=int, default=5,
-                        help='max early stopped patience')
-    parser.add_argument('--seed', type=int, default=1111,
-                        help='random seed')
+    parser.add_argument('--ratio_valid', type=float, default=0.1, help='ratio of validation set from training set')
+    parser.add_argument('--num_worker', type=int, default=0, help='number of dataloader worker')
+    parser.add_argument('--batch_size', type=int, default=50, metavar='N', help='batch size')
+    parser.add_argument('--epochs', type=int, default=100, help='upper epoch limit')
+    parser.add_argument('--epochs_warmup', type=int, default=0, help='warm up epoch')
+    parser.add_argument('--dropout', type=float, default=0.1, help='dropout rate applied to layers (0 = no dropout)')
+    parser.add_argument('--lr', type=float, default=1e-3, help='initial learning rate')
+    parser.add_argument('--lr_step', type=int, default=10, help='number of epoch for each lr downgrade')
+    parser.add_argument('--lr_gamma', type=float, default=0.1, help='strength of lr downgrade')
+    parser.add_argument('--es_patience_max', type=int, default=5, help='max early stopped patience')
+    parser.add_argument('--seed', type=int, default=1111, help='random seed')
 
     # path settings
-    parser.add_argument('--path_data', type=str, default='./data/',
-                        help='path of the data corpus')
-    parser.add_argument('--path_log', type=str, default='./result/logs/',
-                        help='path of the training logs')
-    parser.add_argument('--path_model', type=str, default='./result/models/',
-                        help='path of the trained model')
+    parser.add_argument('--path_data', type=str, default='./data/', help='path of the data corpus')
+    parser.add_argument('--path_log', type=str, default='./result/logs/', help='path of the training logs')
+    parser.add_argument('--path_model', type=str, default='./result/models/', help='path of the trained model')
+    parser.add_argument('--save_model', type=bool, default=False, help='save model for further use')
 
     args = parser.parse_args()
     args.device = torch.device(args.device)
@@ -133,8 +114,7 @@ def main():
 
         # early stopping condition
         if acc_val > acc_best or (acc_val == acc_best and loss_val < loss_best):
-            with open(args.path_model_params, 'wb') as f:
-                torch.save(model.state_dict(), f)
+            state_best = copy.deepcopy(model.state_dict())
             loss_best = loss_val
             acc_best = acc_val
             epoch_best = epoch
@@ -152,10 +132,12 @@ def main():
 
     # testing phase
     print('\n[Testing]')
-    with open(args.path_model_params, 'rb') as f:
-        model.load_state_dict(torch.load(f))
-    with open(args.path_model, 'wb') as f:
-        torch.save(model, f)
+    model.load_state_dict(state_best)
+    if args.save_model:
+        with open(args.path_model_params, 'wb') as f:
+            torch.save(model.state_dict(), f)
+        with open(args.path_model, 'wb') as f:
+            torch.save(model, f)
 
     loss_test, acc_test = evaluate(args, model, test_loader)
 
