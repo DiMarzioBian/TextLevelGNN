@@ -12,6 +12,9 @@ class TextLevelGNN(nn.Module):
         self.n_category = args.n_category
         self.max_len_text = args.max_len_text
 
+        self.layer_norm = args.layer_norm
+        self.relu = args.relu
+
         if args.pretrained:
             self.embedding = nn.Embedding.from_pretrained(embeds_pretrained, freeze=False, padding_idx=0)
         else:
@@ -40,7 +43,9 @@ class TextLevelGNN(nn.Module):
 
         idx_nodes = torch.cat((nb_x, x.unsqueeze(-1)), dim=-1)
         emb_nodes = self.embedding(idx_nodes)
-        emb_nodes = self.ln(emb_nodes.view(len(x), -1, self.d_model)).view(len(x), self.max_len_text, -1, self.d_model)
+        if self.layer_norm:
+            emb_nodes = self.ln(emb_nodes.view(len(x), -1, self.d_model))
+            emb_nodes.view(len(x), self.max_len_text, -1, self.d_model)
 
         # message generating
         w_edge = self.weight_edge(w_edge)
@@ -50,5 +55,7 @@ class TextLevelGNN(nn.Module):
         eta = self.eta_node(x)
         h_node = (1 - eta) * msg_nb + eta * emb_nodes[:, :, -1, :]
 
+        if self.relu:
+            h_node = F.relu(h_node)
         scores = self.fc(h_node.sum(dim=1))
         return scores

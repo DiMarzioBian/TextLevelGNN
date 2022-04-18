@@ -22,6 +22,8 @@ def main():
     parser.add_argument('--fix_edge_w', type=bool, default=False, help='ablation: fix edge weights')
     parser.add_argument('--mean_reduction', type=bool, default=False, help='ablation: use mean reduction instead of max')
     parser.add_argument('--pretrained', type=bool, default=True, help='ablation: use pretrained GloVe')
+    parser.add_argument('--layer_norm', type=bool, default=True, help='ablation: use layer normalization')
+    parser.add_argument('--relu', type=bool, default=False, help='ablation: use relu before softmax')
     parser.add_argument('--device', type=str, default='cuda:0', help='device for computing')
 
     # hyperparameters
