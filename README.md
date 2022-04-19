@@ -26,6 +26,18 @@ unzip and move the file `glove.6B.300d.txt` under `./data/` folder.
 
 We are only able to implement similar result on R8 and R52 dataset, while Ohsumed perform quite difference as compared to paper's one.
 
-| Accuracy | R8     | R52    | Ohsumed | MR     |
-|----------|--------|--------|---------|--------|
-| Test     | 96.53% | 93.50% | untest  | untest |
+| Accuracy | R8     | R52    | Ohsumed |
+|----------|--------|--------|---------|
+| Test     | 98.31% | 94.55% | 67.15%  |
+
+With the hyperparameter settings that achieves this result
+
+| Hyperparameter     | R8    | R52   | Ohsumed |
+|--------------------|-------|-------|---------|
+| batch_size         | 100   | 100   | 100     |
+| max_len_text       | 100   | 100   | 100     |
+| Use layer_norm     | False | True  | True    |
+| Use ReLU           | False | False | True    |
+| Use mean_reduction | False | False | False   |
+| Use ReLU           | False | False | False   |
+| n_degree           | 2     | 11    | 11      |
