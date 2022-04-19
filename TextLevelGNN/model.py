@@ -9,7 +9,7 @@ class TextLevelGNN(nn.Module):
         super(TextLevelGNN, self).__init__()
         self.n_node = args.n_word
         self.d_model = args.d_model
-        self.n_category = args.n_category
+        self.n_class = args.n_class
         self.max_len_text = args.max_len_text
         self.layer_norm = args.layer_norm
         self.relu = args.relu
@@ -30,7 +30,7 @@ class TextLevelGNN(nn.Module):
         nn.init.xavier_uniform_(self.weight_edge.weight)
         nn.init.xavier_uniform_(self.eta_node.weight)
 
-        self.fc = nn.Linear(self.d_model, self.n_category, bias=True)
+        self.fc = nn.Linear(self.d_model, self.n_class, bias=True)
 
     def forward(self, x, nb_x, w_edge):
         """

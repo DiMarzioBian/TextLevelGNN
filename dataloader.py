@@ -2,7 +2,6 @@ import pickle
 import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
-from sklearn.model_selection import train_test_split
 
 
 class TextDataset(Dataset):
@@ -15,13 +14,12 @@ class TextDataset(Dataset):
         self.n_degree = args.n_degree
         self.max_len_text = args.max_len_text
 
-        args.n_category = len(set(self.gt))
-
     def __len__(self):
         return self.length
 
     def __getitem__(self, idx):
         text_tokens = self.data[idx]
+        # text_tokens = self.data[idx][:self.max_len_text]
         len_text = len(text_tokens)
         nb_text = []
 
@@ -66,30 +64,31 @@ def get_dataloader(args):
     with open(args.path_data, 'rb') as f:
         mappings = pickle.load(f)
 
-    train_data = mappings['tr_data']
-    train_gt = mappings['tr_gt']
-    test_x = mappings['te_data']
-    test_y = mappings['te_gt']
+    # label2idx = mappings['label2idx']
     word2idx = mappings['word2idx']
+    tr_data = mappings['tr_data']
+    tr_gt = mappings['tr_gt']
+    val_data = mappings['val_data']
+    val_gt = mappings['val_gt']
+    te_data = mappings['te_data']
+    te_gt = mappings['te_gt']
     embeds = mappings['embeds']
     args_prepare = mappings['args']
 
-    if args_prepare.max_len_text != args.max_len_text or args_prepare.d_pretrained != args.d_model:
+    if args_prepare.d_pretrained != args.d_model:
         raise ValueError('Experiment settings do not match data preprocess settings. '
                          'Please re-run prepare.py with correct settings.')
+    args.n_class = args_prepare.n_class
 
     args.n_word = len(word2idx)  # including <pad> and <unk>
 
-    train_x, valid_x, train_y, valid_y = train_test_split(train_data, train_gt, test_size=args.ratio_valid,
-                                                          random_state=args.seed)
-
-    train_loader = DataLoader(TextDataset(args, train_x, train_y), batch_size=args.batch_size,
+    train_loader = DataLoader(TextDataset(args, tr_data, tr_gt), batch_size=args.batch_size,
                               num_workers=args.num_worker, collate_fn=collate_fn, shuffle=True)
 
-    valid_loader = DataLoader(TextDataset(args, valid_x, valid_y), batch_size=args.batch_size,
+    valid_loader = DataLoader(TextDataset(args, val_data, val_gt), batch_size=args.batch_size,
                               num_workers=args.num_worker, collate_fn=collate_fn, shuffle=True)
 
-    test_loader = DataLoader(TextDataset(args, test_x, test_y), batch_size=args.batch_size,
+    test_loader = DataLoader(TextDataset(args, te_data, te_gt), batch_size=args.batch_size,
                              num_workers=args.num_worker, collate_fn=collate_fn, shuffle=True)
 
     return train_loader, valid_loader, test_loader, word2idx, torch.Tensor(embeds)

@@ -10,7 +10,7 @@ def main():
     parser = argparse.ArgumentParser(description='TextLevelGNN-DGL data packaging project')
 
     # experiment setting
-    parser.add_argument('--dataset', type=str, default='ohsumed', choices=['r8', 'r52', 'ohsumed'], help='used dataset')
+    parser.add_argument('--dataset', type=str, default='r8', choices=['r8', 'r52', 'ohsumed'], help='used dataset')
     parser.add_argument('--pretrained', type=bool, default=True, help='use pretrained GloVe embeddings')
     parser.add_argument('--d_pretrained', type=int, default=300, help='pretrained embedding dimension')
     parser.add_argument('--seed', type=int, default=1111, help='random seed')
@@ -62,8 +62,6 @@ def main():
 
     with open(args.path_data + args.dataset + '.pkl', 'wb') as f:
         pickle.dump(mappings, f)
-    with zipfile.ZipFile(args.path_data + args.dataset + '.zip', 'w') as zf:
-        zf.write(args.path_data + args.dataset + '.pkl', compress_type=zipfile.ZIP_DEFLATED)
 
     print('\n[info] Time consumed: {:.2f}s'.format(time.time() - time_start))
 
