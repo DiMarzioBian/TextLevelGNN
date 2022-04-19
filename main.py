@@ -3,10 +3,7 @@ import os
 import time
 import zipfile
 import copy
-
 import torch
-import torch.nn as nn
-import torch.onnx
 
 from dataloader import get_dataloader
 from TextLevelGNN.model import TextLevelGNN
@@ -19,9 +16,9 @@ def main():
     # experiment setting
     parser.add_argument('--dataset', type=str, default='r52', choices=['mr', 'ohsumed', 'R8', 'R52'],
                         help='name of dataset used')
-    parser.add_argument('--fix_edge_w', type=bool, default=False, help='ablation: fix edge weights')
+    parser.add_argument('--fix_edge_w', type=bool, default=True, help='ablation: fix edge weights')
     parser.add_argument('--mean_reduction', type=bool, default=False, help='ablation: use mean reduction instead of max')
-    parser.add_argument('--pretrained', type=bool, default=True, help='ablation: use pretrained GloVe')
+    parser.add_argument('--pretrained', type=bool, default=False, help='ablation: use pretrained GloVe')
     parser.add_argument('--layer_norm', type=bool, default=True, help='ablation: use layer normalization')
     parser.add_argument('--relu', type=bool, default=False, help='ablation: use relu before softmax')
     parser.add_argument('--device', type=str, default='cuda:0', help='device for computing')
@@ -38,8 +35,7 @@ def main():
     parser.add_argument('--num_worker', type=int, default=0, help='number of dataloader worker')
     parser.add_argument('--batch_size', type=int, default=50, metavar='N', help='batch size')
     parser.add_argument('--epochs', type=int, default=100, help='upper epoch limit')
-    parser.add_argument('--epochs_warmup', type=int, default=0, help='warm up epoch')
-    parser.add_argument('--dropout', type=float, default=0.1, help='dropout rate applied to layers (0 = no dropout)')
+    parser.add_argument('--dropout', type=float, default=0, help='dropout rate applied to layers (0 = no dropout)')
     parser.add_argument('--lr', type=float, default=1e-3, help='initial learning rate')
     parser.add_argument('--lr_step', type=int, default=10, help='number of epoch for each lr downgrade')
     parser.add_argument('--lr_gamma', type=float, default=0.1, help='strength of lr downgrade')
@@ -57,8 +53,6 @@ def main():
     if args.dataset == 'ohsumed':
         args.dataset = 'ohsumed_single_23'
         args.n_word_min = 3
-        args.n_degree = 6
-        args.epochs_warmup = 10
 
     if not os.path.exists(args.path_data + args.dataset + '.pkl'):
         if os.path.exists(args.path_data + args.dataset + '.zip'):
