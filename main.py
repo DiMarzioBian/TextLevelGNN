@@ -16,28 +16,28 @@ def main():
     # experiment setting
     parser.add_argument('--dataset', type=str, default='ohsumed', choices=['mr', 'ohsumed', 'r8', 'r52'],
                         help='dataset name')
-    parser.add_argument('--mean_reduction', type=bool, default=False,
-                        help='ablation: use mean reduction instead of max')
-    parser.add_argument('--pretrained', type=bool, default=False, help='ablation: use pretrained GloVe')
-    parser.add_argument('--layer_norm', type=bool, default=True, help='ablation: use layer normalization')
-    parser.add_argument('--relu', type=bool, default=False, help='ablation: use relu before softmax')
-    parser.add_argument('--device', type=str, default='cuda:0', help='device for computing')
+    parser.add_argument('--mean_reduction', action='store_false', help='ablation: use mean reduction instead of max')
+    parser.add_argument('--pretrained', action='store_true', help='ablation: use pretrained GloVe')
+    parser.add_argument('--layer_norm', action='store_false', help='ablation: use layer normalization')
+    parser.add_argument('--relu', action='store_true', help='ablation: use relu before softmax')
+    parser.add_argument('--n_degree', type=int, default=99, help='neighbor region radius')
 
     # hyperparameters
     parser.add_argument('--d_model', type=int, default=300, help='node representation dimensions including embedding')
     parser.add_argument('--max_len_text', type=int, default=100,
                         help='maximum length of text, default 100, and 150 for ohsumed')
-    parser.add_argument('--n_degree', type=int, default=3, help='neighbor region radius')
+    parser.add_argument('--device', type=str, default='cuda:0', help='device for computing')
 
     # training settings
-    parser.add_argument('--num_worker', type=int, default=0, help='number of dataloader worker')
-    parser.add_argument('--batch_size', type=int, default=50, metavar='N', help='batch size')
+    parser.add_argument('--num_worker', type=int, default=5, help='number of dataloader worker')
+    parser.add_argument('--batch_size', type=int, default=100, metavar='N', help='batch size')
     parser.add_argument('--epochs', type=int, default=100, help='upper epoch limit')
     parser.add_argument('--dropout', type=float, default=0, help='dropout rate applied to layers (0 = no dropout)')
     parser.add_argument('--lr', type=float, default=1e-3, help='initial learning rate')
-    parser.add_argument('--lr_step', type=int, default=10, help='number of epoch for each lr downgrade')
+    parser.add_argument('--lr_step', type=int, default=5, help='number of epoch for each lr downgrade')
     parser.add_argument('--lr_gamma', type=float, default=0.1, help='strength of lr downgrade')
-    parser.add_argument('--es_patience_max', type=int, default=10, help='max early stopped patience')
+    parser.add_argument('--es_patience_max', type=int, default=5, help='max early stopped patience')
+    parser.add_argument('--loss_eps', type=float, default=1e-4, help='minimum loss change threshold')
     parser.add_argument('--seed', type=int, default=1111, help='random seed')
 
     # path settings
@@ -77,10 +77,10 @@ def main():
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.lr_step, gamma=args.lr_gamma)
 
     # Start modeling
-    # print('\n[info] | Dataset: {Dataset} | mean_reduction: {mean_reduction} '
-    #       '| pretrained: {pretrained} | n_word_min: {n_word_min} | n_degree: {n_degree} |'
-    #       .format(Dataset=args.dataset, mean_reduction=args.mean_reduction,
-    #               pretrained=args.pretrained, n_word_min=args.n_word_min, n_degree=args.n_degree))
+    print('\n[info] | Dataset: {Dataset} | mean_reduction: {mean_reduction} | pretrained: {pretrained} '
+          '| n_degree: {n_degree} | layer_norm: {layer_norm} | relu: {relu} |'
+          .format(Dataset=args.dataset, mean_reduction=args.mean_reduction, pretrained=args.pretrained,
+                  n_degree=args.n_degree, layer_norm=args.layer_norm, relu=args.relu))
     loss_best = 1e5
     acc_best = 0
     epoch_best = 0
@@ -100,7 +100,8 @@ def main():
         loss_val, acc_val = evaluate(args, model, valid_loader)
 
         # early stopping condition
-        if acc_val > acc_best or (acc_val == acc_best and loss_val < loss_best):
+        if acc_val > acc_best or (acc_val == acc_best and loss_best - loss_val > args.loss_eps):
+            es_patience = 0
             state_best = copy.deepcopy(model.state_dict())
             loss_best = loss_val
             acc_best = acc_val
@@ -130,10 +131,10 @@ def main():
 
     print('\n\t| Test | loss {:5.4f} | acc {:5.4f} |'
           .format(loss_test, acc_test))
-    # print('\n[info] | Dataset: {Dataset} | mean_reduction: {mean_reduction} '
-    #       '| pretrained: {pretrained} | n_word_min: {n_word_min} | n_degree: {n_degree} |'
-    #       .format(Dataset=args.dataset, mean_reduction=args.mean_reduction,
-    #               pretrained=args.pretrained, n_word_min=args.n_word_min, n_degree=args.n_degree))
+    print('\n[info] | Dataset: {Dataset} | mean_reduction: {mean_reduction} | pretrained: {pretrained} '
+          '| n_degree: {n_degree} | layer_norm: {layer_norm} | relu: {relu} |\n'
+          .format(Dataset=args.dataset, mean_reduction=args.mean_reduction, pretrained=args.pretrained,
+                  n_degree=args.n_degree, layer_norm=args.layer_norm, relu=args.relu))
 
 
 if __name__ == '__main__':
