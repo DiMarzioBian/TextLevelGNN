@@ -16,7 +16,7 @@ def main():
     # experiment setting
     parser.add_argument('--dataset', type=str, default='ohsumed', choices=['mr', 'ohsumed', 'r8', 'r52'],
                         help='dataset name')
-    parser.add_argument('--mean_reduction', action='store_false', help='ablation: use mean reduction instead of max')
+    parser.add_argument('--mean_reduction', action='store_true', help='ablation: use mean reduction instead of max')
     parser.add_argument('--pretrained', action='store_true', help='ablation: use pretrained GloVe')
     parser.add_argument('--layer_norm', action='store_false', help='ablation: use layer normalization')
     parser.add_argument('--relu', action='store_true', help='ablation: use relu before softmax')
