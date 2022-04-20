@@ -30,7 +30,7 @@ def train(args, model, data, optimizer):
 
 
 def evaluate(args, model, data):
-    model.train()
+    model.eval()
     loss_total = 0.
     n_sample = 0
     correct_pred_total = 0

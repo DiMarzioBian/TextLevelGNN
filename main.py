@@ -20,7 +20,7 @@ def main():
     parser.add_argument('--pretrained', action='store_true', help='ablation: use pretrained GloVe')
     parser.add_argument('--layer_norm', action='store_false', help='ablation: use layer normalization')
     parser.add_argument('--relu', action='store_true', help='ablation: use relu before softmax')
-    parser.add_argument('--n_degree', type=int, default=99, help='neighbor region radius')
+    parser.add_argument('--n_degree', type=int, default=11, help='neighbor region radius')
 
     # hyperparameters
     parser.add_argument('--d_model', type=int, default=300, help='node representation dimensions including embedding')
