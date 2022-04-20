@@ -36,6 +36,7 @@ With the hyperparameter settings that achieves this result
 |--------------------|-------|-------|---------|
 | batch_size         | 100   | 100   | 100     |
 | max_len_text       | 100   | 100   | 100     |
+| dropout            | 0     | 0     | 0       |
 | Use layer_norm     | False | True  | True    |
 | Use ReLU           | False | False | True    |
 | Use mean_reduction | False | False | False   |
