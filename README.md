@@ -40,5 +40,5 @@ With the hyperparameter settings that achieves this result
 | Use layer_norm     | False | True  | True    |
 | Use ReLU           | False | False | True    |
 | Use mean_reduction | False | False | False   |
-| Use ReLU           | False | False | False   |
+| Use pretrained     | False | False | False   |
 | n_degree           | 2     | 11    | 11      |

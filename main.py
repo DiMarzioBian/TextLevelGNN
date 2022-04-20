@@ -30,7 +30,8 @@ def main():
 
     # training settings
     parser.add_argument('--num_worker', type=int, default=5, help='number of dataloader worker')
-    parser.add_argument('--batch_size', type=int, default=100, metavar='N', help='batch size')
+    parser.add_argument('--batch_size', t
+    ype=int, default=100, metavar='N', help='batch size')
     parser.add_argument('--epochs', type=int, default=100, help='upper epoch limit')
     parser.add_argument('--dropout', type=float, default=0, help='dropout rate applied to layers (0 = no dropout)')
     parser.add_argument('--lr', type=float, default=1e-3, help='initial learning rate')
