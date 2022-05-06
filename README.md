@@ -1,6 +1,6 @@
 # TextLevelGNN
 
-This is a toy PyTorch implementation for the EMNLP'19  paper [Text Level Graph Neural Network for Text Classification](https://www.aclweb.org/anthology/D19-1345.pdf)
+This is a PyTorch implementation for the EMNLP'19  paper [Text Level Graph Neural Network for Text Classification](https://www.aclweb.org/anthology/D19-1345.pdf)
 
 ---
 ## Training
